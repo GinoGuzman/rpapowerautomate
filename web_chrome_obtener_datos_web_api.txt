@@ -1,0 +1,21 @@
+File.WriteText File: str_ruta_log TextToWrite: $'''%fecha_hora_actual%  - Cargando pagina web - %str_url_pagina_web%''' AppendNewLine: True IfFileExists: File.IfFileExists.Append Encoding: File.FileEncoding.UTF8
+    ON ERROR
+
+    END
+WebAutomation.LaunchChrome.LaunchChromeCloseDialog Url: str_url_pagina_web WindowState: WebAutomation.BrowserWindowState.Normal ClearCache: False ClearCookies: False WaitForPageToLoadTimeout: 60 Timeout: 60 BrowserInstance=> browser_api
+    ON ERROR REPEAT 3 TIMES WAIT 5
+    ON ERROR
+        SET str_status_message TO $'''No cargo, pagina web - %str_url_pagina_web%'''
+        THROW ERROR
+    END
+WebAutomation.ExtractData.ExtractTable BrowserInstance: browser_api Control: $'''html > body > div > div:eq(0) > main > section:eq(1) > div > article''' ExtractionParameters: {[$'''div:eq(1) > div:eq(0) > a > h2''', $'''Own Text''', $'''''', $'''Value #1'''], [$'''div:eq(1) > div:eq(0) > span''', $'''Own Text''', $'''''', $'''Value #2'''], [$'''div:eq(1) > div:eq(1) > a''', $'''Own Text''', $'''''', $'''Value #3'''], [$'''div:eq(1) > div:eq(2) > a''', $'''Own Text''', $'''''', $'''Value #4'''] } PostProcessData: False TimeoutInSeconds: 60 ExtractedData=> dataTable_API
+    ON ERROR REPEAT 3 TIMES WAIT 5
+    ON ERROR
+        SET str_status_message TO $'''No se pudo obtener los datos de la web - %str_url_pagina_web%'''
+        THROW ERROR
+    END
+WebAutomation.CloseWebBrowser BrowserInstance: browser_api
+    ON ERROR
+
+    END
+EXIT FUNCTION

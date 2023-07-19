@@ -1,0 +1,7 @@
+File.WriteText File: str_ruta_log TextToWrite: $'''%fecha_hora_actual%  - Cargando Formulario - %str_url_formulario%''' AppendNewLine: True IfFileExists: File.IfFileExists.Append Encoding: File.FileEncoding.UTF8
+    ON ERROR
+
+    END
+WebAutomation.LaunchChrome.LaunchChromeCloseDialog Url: str_url_formulario WindowState: WebAutomation.BrowserWindowState.Maximized ClearCache: False ClearCookies: False WaitForPageToLoadTimeout: 60 Timeout: 60 BrowserInstance=> browser_formulario
+    ON ERROR REPEAT 3 TIMES WAIT 5
+    END

@@ -1,0 +1,34 @@
+BLOCK Trycash
+ON BLOCK ERROR
+    SET str_status_message TO $'''Error al crear o actualizar reporte de ejecución.'''
+    CALL SystemException
+END
+    File.WriteText File: str_ruta_log TextToWrite: $'''%fecha_hora_actual%  - Generando reporte.''' AppendNewLine: True IfFileExists: File.IfFileExists.Append Encoding: File.FileEncoding.UTF8
+    # Generando reporte en excel.
+    IF (File.IfFile.Exists File: $'''%str_ruta_reporte%\\Reporte_%fecha_hora_actual.Year%_%fecha_hora_actual.Month%_%fecha_hora_actual.Day%.xlsx''') THEN
+        Excel.LaunchExcel.LaunchAndOpenUnderExistingProcess Path: $'''%str_ruta_reporte%\\Reporte_%fecha_hora_actual.Year%_%fecha_hora_actual.Month%_%fecha_hora_actual.Day%.xlsx''' Visible: False ReadOnly: False Instance=> Excel_Instance_Reporte
+                    ON ERROR REPEAT 2 TIMES WAIT 10
+                    END
+        Excel.ReadFromExcel.ReadAllCells Instance: Excel_Instance_Reporte ReadAsText: False FirstLineIsHeader: False RangeValue=> ExcelData
+        IF ExcelData.RowsCount > 0 THEN
+            SET int_numero_fila TO ExcelData.RowsCount
+        ELSE
+            SET int_numero_fila TO 0
+        END
+    ELSE
+        Excel.LaunchExcel.LaunchUnderExistingProcess Visible: False Instance=> Excel_Instance_Reporte
+                    ON ERROR REPEAT 2 TIMES WAIT 10
+                    END
+        SET int_numero_fila TO 1
+    END
+    Excel.WriteToExcel.WriteCell Instance: Excel_Instance_Reporte Value: dataTable_reporte Column: $'''A''' Row: int_numero_fila
+        ON ERROR REPEAT 2 TIMES WAIT 10
+        END
+    Excel.SaveExcel.SaveAs Instance: Excel_Instance_Reporte DocumentFormat: Excel.ExcelFormat.OpenXmlWorkbook DocumentPath: $'''%str_ruta_reporte%\\Reporte_%fecha_hora_actual.Year%_%fecha_hora_actual.Month%_%fecha_hora_actual.Day%.xlsx'''
+        ON ERROR REPEAT 2 TIMES WAIT 10
+        END
+    Excel.CloseExcel.CloseAndSave Instance: Excel_Instance_Reporte
+    Display.ShowMessageDialog.ShowMessageWithTimeout Title: $'''Reporte''' Message: $'''Se guardo el reporte en la ruta:  %str_ruta_reporte%\\Reporte_%fecha_hora_actual.Year%_%fecha_hora_actual.Month%_%fecha_hora_actual.Day%.xlsx''' Icon: Display.Icon.Information Buttons: Display.Buttons.OK DefaultButton: Display.DefaultButton.Button1 IsTopMost: False Timeout: 30 ButtonPressed=> ButtonPressed
+END
+EXIT FUNCTION
+

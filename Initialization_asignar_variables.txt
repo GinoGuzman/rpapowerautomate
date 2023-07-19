@@ -1,0 +1,22 @@
+DateTime.GetCurrentDateTime.Local DateTimeFormat: DateTime.DateTimeFormat.DateAndTime CurrentDateTime=> fecha_hora_actual
+SET str_status TO $'''%''%'''
+SET str_status_message TO $'''%''%'''
+SET str_url_pagina_web TO $'''https://rickandmortyapi.com'''
+SET str_url_formulario TO $'''https://forms.gle/78ry2THiaMwyLebD9'''
+Variables.CreateNewDatatable InputTable: { ^['Nombre', 'Estado', 'Última Ubicacion', 'Visto por primera vvez', 'Fecha y Hora', 'Column1'], [$'''''', $'''''', $'''''', $'''''', $'''''', $''''''] } DataTable=> dataTable_reporte
+Folder.GetSpecialFolder SpecialFolder: Folder.SpecialFolder.Personal SpecialFolderPath=> str_ruta_documentos
+SET str_ruta_reporte TO $'''%str_ruta_documentos%\\reporte'''
+# Validando que la carpeta donde se va crear el reporte.
+IF (Folder.IfFolderExists.DoesNotExist Path: str_ruta_reporte) THEN
+    Folder.Create FolderPath: str_ruta_documentos FolderName: $'''reporteApi''' Folder=> str_ruta_reporte
+        ON ERROR REPEAT 2 TIMES WAIT 5
+        END
+END
+# creando archivo log
+SET str_ruta_log TO $'''%str_ruta_reporte%\\log.txt'''
+IF (File.IfFile.DoesNotExist File: str_ruta_log) THEN
+    File.WriteText File: str_ruta_log TextToWrite: $'''\"Iniciando Proceso RPA\"''' AppendNewLine: True IfFileExists: File.IfFileExists.Overwrite Encoding: File.FileEncoding.UTF8
+        ON ERROR
+
+        END
+END

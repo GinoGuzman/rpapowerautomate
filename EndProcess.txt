@@ -1,0 +1,19 @@
+BLOCK ThryCash
+ON BLOCK ERROR
+    SET str_status_message TO $'''Se presentaron errores en el sub flujo End Process.'''
+    CALL SystemException
+END
+    WebAutomation.CloseWebBrowser BrowserInstance: browser_api
+        ON ERROR
+
+        END
+    WebAutomation.CloseWebBrowser BrowserInstance: browser_formulario
+        ON ERROR
+
+        END
+    Excel.CloseExcel.CloseAndSave Instance: Excel_Instance_Reporte
+        ON ERROR
+
+        END
+END
+EXIT FUNCTION

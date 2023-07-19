@@ -1,0 +1,20 @@
+BLOCK Trycash
+ON BLOCK ERROR
+    CALL SystemException
+END
+    File.WriteText File: str_ruta_log TextToWrite: $'''%fecha_hora_actual%  - Actualizando tabla reportes''' AppendNewLine: True IfFileExists: File.IfFileExists.Append Encoding: File.FileEncoding.UTF8
+        ON ERROR
+
+        END
+    Variables.CreateNewList List=> List_datos
+    Variables.AddItemToList Item: dataRow_tabla_API[0] List: List_datos
+    Variables.AddItemToList Item: dataRow_tabla_API[1] List: List_datos
+    Variables.AddItemToList Item: dataRow_tabla_API[2] List: List_datos
+    Variables.AddItemToList Item: dataRow_tabla_API[3] List: List_datos
+    Variables.AddItemToList Item: fecha_hora_actual List: List_datos
+    Variables.AddItemToList Item: str_status List: List_datos
+    Variables.AddRowToDataTable.InsertItemToDataTable DataTable: dataTable_reporte RowIndex: int_contador RowToAdd: List_datos
+END
+IF IsEmpty(str_status_message) THEN
+    SET str_status TO $'''Success'''
+END

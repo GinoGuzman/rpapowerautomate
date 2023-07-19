@@ -1,0 +1,33 @@
+**REGION Initialization
+BLOCK TryCashInitialization
+ON BLOCK ERROR
+    CALL SystemException
+    SET str_status_message TO $'''Error en el bloue initialization'''
+END
+    CALL Initialization
+    CALL web_chrome_obtener_datos_web_api
+    CALL web_chrome_cargar_formulario
+END
+**ENDREGION
+**REGION Process
+IF IsEmpty(str_status) THEN
+    SET int_contador TO 0
+    LOOP FOREACH dataRow_tabla_API IN dataTable_API
+        SET str_status TO $'''%''%'''
+        SET str_status_message TO $'''%''%'''
+        CALL ValidarDatos
+        IF IsEmpty(str_status) THEN
+            CALL ProcessTransaction
+            CALL process_insertar_fila_data_table
+        END
+        WebAutomation.GoToWebPage.GoToWebPageCloseDialog BrowserInstance: browser_formulario Url: str_url_formulario WaitForPageToLoadTimeout: 60
+                ON ERROR REPEAT 1 TIMES WAIT 3
+                END
+        Variables.IncreaseVariable Value: int_contador IncrementValue: 1
+    END
+    CALL process_generar_reporte
+END
+**ENDREGION
+**REGION EndProcess
+CALL EndProcess
+**ENDREGION

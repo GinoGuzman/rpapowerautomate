@@ -1,0 +1,2 @@
+SET str_status TO $'''BusinessException - %str_status_message%'''
+File.WriteText File: str_ruta_log TextToWrite: $'''%fecha_hora_actual%  - %str_status_message%''' AppendNewLine: True IfFileExists: File.IfFileExists.Append Encoding: File.FileEncoding.UTF8

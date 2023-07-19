@@ -1,0 +1,6 @@
+IF IsEmpty(dataRow_tabla_API) THEN
+    SET str_status_message TO $'''El data row, no tiene datos para procesar.'''
+END
+IF IsNotEmpty(str_status_message) THEN
+    CALL BusinessException
+END
